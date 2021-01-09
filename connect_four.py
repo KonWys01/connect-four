@@ -1,9 +1,10 @@
 import numpy as np
 import pygame
 import sys
+import time
 pygame.init()
-COLUMNS = 12
-ROWS = 8
+COLUMNS = 7
+ROWS = 6
 
 ITEM_SIZE = 100
 width = COLUMNS * ITEM_SIZE
@@ -45,33 +46,36 @@ def check_if_win(our_board):
                 player = our_board[rows][column]
                 #print(rows, column)
                 if column >= 3:  # check left side horizontally 3,4,5,6
-                    if our_board[rows][column - 1] == player and  our_board[rows][column - 2] == player and our_board[rows][column - 3] == player:
+                    if our_board[rows][column - 1] == player and our_board[rows][column - 2] == player and our_board[rows][column - 3] == player:
                         print("1 opcja")
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ((column-3) * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), width=10)
                         return player
                 if column < COLUMNS - 3:  # check right side horizontally 0,1,2,3
-                    if our_board[rows][column + 1] == player and  our_board[rows][column + 2] == player and our_board[rows][column + 3] == player:
+                    if our_board[rows][column + 1] == player and our_board[rows][column + 2] == player and our_board[rows][column + 3] == player:
                         print("2 opcja")
-                        #print(our_board[rows][column], our_board[rows][column + 1], our_board[rows][column + 2], our_board[rows][column + 3])
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ((column+3) * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), width=10)
+                        #  (columns * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE)
                         return player
                 if rows >= 3:  # check upper vertically 3,4,5
                     if our_board[rows - 1][column] == player and our_board[rows - 2][column] == player and our_board[rows - 3][column] == player:
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - (rows-3) * ITEM_SIZE), width=10)
                         print("3 opcja")
                         return player
                 if rows < ROWS - 3:  # check lower vertically 0,1,2
                     if our_board[rows + 1][column] == player and our_board[rows + 2][column] == player and our_board[rows + 3][column] == player:
-                        #print(our_board[rows][column], rows, column)
-                        #print(our_board[rows + 1][column], rows + 1, column, "  ", our_board[rows + 2][column], our_board[rows + 2][column])
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - (rows+3) * ITEM_SIZE), width=10)
                         print("4 opcja")
                         return player
                 if column < COLUMNS - 3 and rows < ROWS - 3: # check right diagonally "na ukos"
                     if our_board[rows + 1][column + 1] == player and our_board[rows + 2][column + 2] == player and our_board[rows + 3][column + 3] == player:
                         print("5 opcja")
-                        #print(our_board[rows][column], our_board[rows + 1][column + 1], our_board[rows + 2][column + 2], our_board[rows + 3][column + 3])
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ((column+3) * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - (rows+3) * ITEM_SIZE), width=10)
                         return player
 
                 if column >= 3 and rows < ROWS - 3:  # check left diagonally
                     if our_board[rows + 1][column - 1] == player and our_board[rows + 2][column - 2] == player and our_board[rows + 3][column - 3] == player:
                         print("6 opcja")
+                        pygame.draw.line(screen, "green", (column * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ((column-3) * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - (rows+3) * ITEM_SIZE), width=10)
                         return player
     return 0  # there is no win
 
@@ -106,18 +110,38 @@ def draw_black_rect_at_the_top():
     pygame.draw.rect(screen, "black", (0, 0, width, ITEM_SIZE))
 
 
+"""def draw_tokens_in_color():
+    for rows in range(ROWS - 1, -1, - 1):
+        for columns in range(COLUMNS):
+            if board[rows][columns] == 1:
+                #pygame.draw.circle(screen, "red", (ITEM_SIZE / 2 + columns * ITEM_SIZE, ITEM_SIZE*1.5 + rows * ITEM_SIZE), ITEM_SIZE / 2 - 5)
+                pygame.draw.circle(screen, "red", ((columns * ITEM_SIZE + ITEM_SIZE / 2), rows * ITEM_SIZE + ITEM_SIZE * 1.5), ITEM_SIZE / 2)
+            elif board[rows][columns] == 2:
+                pygame.draw.circle(screen, "orange", (columns * ITEM_SIZE + ITEM_SIZE / 2, rows * ITEM_SIZE + ITEM_SIZE * 1.5), ITEM_SIZE / 2 - 5)"""
+
+
+def draw_tokens_in_color():  # wypisuje do góry nogami
+    for rows in range(ROWS):
+        for columns in range(COLUMNS):
+            if board[rows][columns] == 1:
+                #pygame.draw.circle(screen, "red", (ITEM_SIZE / 2 + columns * ITEM_SIZE, ITEM_SIZE*1.5 + rows * ITEM_SIZE), ITEM_SIZE / 2 - 5)
+                pygame.draw.circle(screen, "red", (columns * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ITEM_SIZE / 2 - 5)
+            elif board[rows][columns] == 2:
+                pygame.draw.circle(screen, "orange", (columns * ITEM_SIZE + ITEM_SIZE / 2, ROWS * ITEM_SIZE + ITEM_SIZE / 2 - rows * ITEM_SIZE), ITEM_SIZE / 2 - 5)
+
+
 screen_size = (width, height)
-#screen = pygame.display.set_mode(screen_size)
-#draw_board()
-#draw_circles()
-#draw_black_rect_at_the_top()
-#pygame.display.update()
+screen = pygame.display.set_mode(screen_size)
+draw_board()
+draw_circles()
+draw_black_rect_at_the_top()
+pygame.display.update()
 
 who_turn = 1
 game_over = False
 while not game_over:
 
-    """for event in pygame.event.get():
+    for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
@@ -125,48 +149,52 @@ while not game_over:
             print(event.pos, x_coordinate)
             place = x_coordinate // ITEM_SIZE
             print(place)
-            pygame.draw.circle(screen, "red",(event.pos[0], ITEM_SIZE / 2), ITEM_SIZE /2)
+            #pygame.draw.circle(screen, "red",(event.pos[0], ITEM_SIZE / 2), ITEM_SIZE /2)
+            draw_tokens_in_color()
+            pygame.display.update()
+            if who_turn == 1:
+                who_turn = 2
+                if not is_valid(board, place):
+                    print("dodaj element jeszcze raz, bo jest poza granicami")
+                    who_turn = 1
+                else:
+                    add_element(board, place, 1)
+            else:
+                who_turn = 1
+                if not is_valid(board, place):
+                    print("dodaj element jeszcze raz, bo jest poza granicami")
+                    who_turn = 2
+                else:
+                    add_element(board, place, 2)
+
+            show_board(board)
+            draw_tokens_in_color()
+            if who_turn == 1:
+                pygame.draw.circle(screen, "red", (event.pos[0], ITEM_SIZE / 2), ITEM_SIZE / 2)
+            else:
+                pygame.draw.circle(screen, "orange", (event.pos[0], ITEM_SIZE / 2), ITEM_SIZE / 2)
             pygame.display.update()
         if event.type == pygame.MOUSEMOTION:
-            x_coordinate = event.pos[0]
-            print(event.pos, x_coordinate)
-            place = x_coordinate // ITEM_SIZE
-            print(place)
             draw_board()
             draw_circles()
             draw_black_rect_at_the_top()
-            pygame.draw.circle(screen, "red", (event.pos[0], ITEM_SIZE / 2), ITEM_SIZE / 2)
-            pygame.display.update()"""
-
-    if who_turn == 1:
-        who_turn = 2
-        place = int(input("Graczu nr1: gdzie chcesz odlozyc swoj element?"))
-        type_again = True
-        while type_again:
-            if not is_valid(board, place):
-                print("Element jest poza tablica, wczytaj ponownie")
-                place = int(input("Graczu nr1: gdzie chcesz odlozyc swoj element?"))
+            if who_turn == 1:
+                pygame.draw.circle(screen, "red", (event.pos[0], ITEM_SIZE / 2), ITEM_SIZE / 2)
             else:
-                type_again = False
-        add_element(board, place, 1)
-    else:
-        who_turn = 1
-        piece = 2
-        place = int(input("Graczu nr2: gdzie chcesz odlozyc swoj element?"))
-        if not is_valid(board, place):
-            print("Element jest poza tablica, wczytaj ponownie")
-            place = int(input("Graczu nr2: gdzie chcesz odlozyc swoj element?"))
-        else:
-            type_again = False
-        add_element(board, place, 2)
-    show_board(board)
+                pygame.draw.circle(screen, "orange", (event.pos[0], ITEM_SIZE / 2), ITEM_SIZE / 2)
+            draw_tokens_in_color()
+            pygame.display.update()
     if check_if_win(board) == 1:
-        print("brawp wygral gracz nr 1")
+        print("brawo wygral gracz nr 1")
+        check_if_win(board)
+        pygame.display.update()
+        time.sleep(2)
         game_over = True
     elif check_if_win(board) == 2:
-        print("brawp wygral gracz nr 2")
+        print("brawo wygral gracz nr 2")
+        check_if_win(board)
+        pygame.display.update()
+        time.sleep(2)
         game_over = True
-    else:
-        print("gra jeszcze trwa Lecimy Duuuuuur!")
 print("end of game")
 show_board(board)
